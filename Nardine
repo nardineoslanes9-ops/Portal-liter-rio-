@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arca dos Livros | Portal de Escritores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Estilização personalizada para o design literário */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f5f1; /* Cor de fundo creme suave, como papel antigo */
+        }
+        .header-bg {
+            background-color: #3b5998; /* Azul escuro para a barra de navegação */
+        }
+        .main-button {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .main-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .book-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .text-brown {
+            color: #6d4c41; /* Marrom escuro para títulos */
+        }
+        /* Estilos para animação do excerto */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .excerpt-content {
+            animation: fadeIn 0.5s ease-out;
+        }
+        /* Estilo para garantir que o rodapé fica no fundo */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex-grow: 1;
+        }
+        /* Adaptar layout de 3 para 4 colunas em ecrãs maiores */
+        @media (min-width: 1024px) {
+            #books-container {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+        /* Estilo para o campo obrigatório */
+        .form-label-required::after {
+            content: ' *';
+            color: #ef4444; /* Cor vermelha para o asterisco */
+        }
+
+        /* Estilos para a animação de scroll (fade-in-up) */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #hero-section {
+            background-attachment: fixed; /* Chave para o efeito parallax */
+            background-size: cover;
+            background-position: center;
+        }
+        .tab-button.active {
+            border-color: #3b5998;
+            color: #3b5998;
+            background-color: #f0f4ff;
+        }
+        /* Estilos para botões de admin (edit/delete) */
+        .admin-action-btn {
+            @apply p-2 rounded-md transition-all duration-150 text-xs;
+        }
+        .admin-action-btn.edit {
+            @apply bg-yellow-100 text-yellow-700 hover:bg-yellow-200;
+        }
+        .admin-action-btn.delete {
+            @apply bg-red-100 text-red-700 hover:bg-red-200;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="app-container">
+        <header class="header-bg shadow-lg">
+            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="book-open-text" class="text-white w-7 h-7"></i>
+                    <a href="#" class="text-2xl font-bold text-white tracking-wider">Arca dos Livros</a>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#destaques" class="text-white hover:text-gray-300 transition duration-150">Destaques</a>
+                    <a href="#autores" class="text-white hover:text-gray-300 transition duration-150">Autores</a>
+                    <a href="#propostas" class="text-white hover:text-gray-300 transition duration-150">Propostas</a>
+                    <a href="#gestao" id="nav-gestao-link" class="text-yellow-300 hover:text-yellow-200 transition duration-150 hidden">Gestão (Admin)</a>
+                </div>
+                <button id="menu-button" class="text-white md:hidden focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </nav>
+            <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-700/80">
+                <a href="#destaques" class="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium">Destaques</a>
+                <a href="#autores" class="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium">Autores</a>
+                <a href="#propostas" class="block text-white hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium">Propostas</a>
+                <a href="#gestao" id="mobile-gestao-link" class="block text-yellow-300 hover:bg-gray-600 px-3 py-2 rounded-md text-base font-medium hidden">Gestão (Admin)</a>
+            </div>
+        </header>
+
+        <main class="w-full">
+            <section id="hero-section" class="relative bg-gray-100 py-16 sm:py-24" style="background-image: url('https://placehold.co/1200x600/f8f5f1/3b5998?text=Descubra+Novas+Vozes+da+Literatura');">
+                <div class="absolute inset-0 bg-black opacity-30"></div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight mb-4 tracking-wider">
+                        A ARCA DOS LIVROS
+                    </h1>
+                    <p class="text-xl sm:text-2xl text-white font-light mb-8 max-w-3xl mx-auto">
+                        O portal dedicado à curadoria e divulgação dos melhores trabalhos de escritores independentes em língua portuguesa.
+                    </p>
+                    <a href="#destaques" class="main-button inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-xl text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                        Comece a Ler Hoje!
+                        <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
+                    </a>
+                </div>
+            </section>
+
+            <section id="destaques" class="py-16 sm:py-24 bg-white scroll-reveal">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-extrabold text-center mb-12 text-brown border-b-2 border-indigo-200 pb-3">
+                        Obras em Destaque
+                    </h2>
+                    <p id="books-loading" class="text-center text-gray-500 font-medium">A carregar obras...</p>
+
+                    <div id="books-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        </div>
+                </div>
+            </section>
+
+            <section id="autores" class="py-16 sm:py-24 bg-gray-100 scroll-reveal">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-extrabold text-center mb-12 text-brown border-b-2 border-indigo-200 pb-3">
+                        Conheça os Nossos Autores
+                    </h2>
+                    <p id="authors-loading" class="text-center text-gray-500 font-medium">A carregar autores...</p>
+
+                    <div id="authors-container" class="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
+                        </div>
+                </div>
+            </section>
+            
+            <section id="gestao" class="py-16 sm:py-24 bg-red-50 hidden" style="border-top: 5px solid #ef4444;">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-extrabold text-center mb-6 text-red-700 border-b-2 border-red-300 pb-3 flex items-center justify-center">
+                        <i data-lucide="shield-half" class="w-8 h-8 mr-3"></i> Painel de Gestão de Conteúdo (Admin)
+                    </h2>
+                    <p class="text-center text-gray-600 mb-8">Utilizador ID: <span id="admin-user-id" class="font-mono text-xs bg-gray-200 px-2 py-1 rounded">A carregar...</span></p>
+
+                    <div class="flex justify-center mb-8 space-x-4">
+                        <button id="tab-manage-authors" data-tab="manage-authors" class="tab-button active px-6 py-2 border-b-4 border-transparent font-semibold text-gray-600 hover:border-indigo-400 transition duration-150 rounded-t-lg flex items-center">
+                             <i data-lucide="users" class="w-5 h-5 mr-2"></i> Gerir Autores
+                        </button>
+                        <button id="tab-manage-books" data-tab="manage-books" class="tab-button px-6 py-2 border-b-4 border-transparent font-semibold text-gray-600 hover:border-indigo-400 transition duration-150 rounded-t-lg flex items-center">
+                             <i data-lucide="book-copy" class="w-5 h-5 mr-2"></i> Gerir Obras
+                        </button>
+                    </div>
+
+                    <div id="content-manage-authors" class="tab-content">
+                        <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+                            <h3 id="author-form-title" class="text-2xl font-bold text-brown mb-6">Adicionar Novo Autor</h3>
+                            <form id="add-author-form">
+                                <input type="hidden" id="edit-author-id">
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                    <div>
+                                        <label for="new-author-name" class="block text-sm font-medium text-gray-700 form-label-required">Nome Completo</label>
+                                        <input type="text" id="new-author-name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500
